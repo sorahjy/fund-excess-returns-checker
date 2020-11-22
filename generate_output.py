@@ -4,7 +4,7 @@ from openpyxl.styles.colors import Color
 from openpyxl.styles import PatternFill
 
 # highlight_red = [2, 4, 8, 10, 15, 20, 20]
-highlight_red = [2, 4.5, 10, 15, 20, 30, 30]
+highlight_red = [2, 4.5, 10, 13, 20, 30, 30]
 highlight_green = [-1, -0.5, 0, 1, 2, 4, 4]
 
 
