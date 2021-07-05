@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import os
-import json
+import json,time,random
 from lxml import etree
 from ttjj_spider.items import MyItem
-
+import requests
 
 class JijinSpider(scrapy.Spider):
     name = 'jijin'
@@ -21,8 +21,11 @@ class JijinSpider(scrapy.Spider):
     def parse(self, response):
         my_item = MyItem()
 
+
+        jjjl_url=''
         if response.status == 200:
             html = etree.HTML(response.text)
+
             my_item['name'] = html.xpath('//div[@class="fundDetail-tit"]/div[1]/text()')
             my_item['fundCode']=html.xpath('//*[@id="body"]/div[11]/div/div/div[1]/div[1]/div//span[@class="ui-num"]/text()')[0]
             my_item['managerTrigger'] = html.xpath('//*[@id="fundManagerTab"]//td[@class="td03"]/text()')[0]
@@ -68,5 +71,17 @@ class JijinSpider(scrapy.Spider):
                         my_item['{}RecentTwoYear'.format(key)] = ''.join(row.xpath('./td[8]/div/text()'))
                         my_item['{}RecentThreeYear'.format(key)] = ''.join(row.xpath('./td[9]/div/text()'))
                         my_item['{}SinceFirstDayOfYear'.format(key)] = ''.join(row.xpath('./td[6]/div/text()'))
-        yield my_item
+
+            jjjl_url = html.xpath('//*[@id="fundManagerTab"]//td[@class="td02"]//a/@href')[:1]
+
+        if jjjl_url:
+            hea = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36'}
+            html = etree.HTML(requests.get(jjjl_url[0], headers=hea).text)
+            my_item['fund_manager_total_asset'] = \
+            html.xpath('/html/body/div[6]/div[2]/div[1]/div/div[2]/div[2]/div/div[1]/span[2]/span[1]/text()')[0]
+            yield my_item
+        else:
+            my_item['fund_manager_total_asset'] = 99999
+            yield my_item
 

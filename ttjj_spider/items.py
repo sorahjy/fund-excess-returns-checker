@@ -13,6 +13,7 @@ class MyItem(scrapy.Item):
 
     # 主页面
     name = scrapy.Field()  # 名称
+    fund_manager_total_asset = scrapy.Field()
     fundCode = scrapy.Field()
     managerTrigger = scrapy.Field()
     netAssetValueEstimated = scrapy.Field()  # 估算净值

@@ -15,6 +15,7 @@ def convert(str):
 def process_item(json_file):
     code = json_file['fundCode']
     name = json_file['name']
+    total_asset = json_file['fund_manager_total_asset']
     week = round(convert(json_file['netAssetValueRestoredGrowthRateRecentWeek']), 2)
     try:
         month = convert(json_file['netAssetValueRestoredGrowthRateRecentMonth']) + 100
@@ -48,7 +49,7 @@ def process_item(json_file):
         two_year_2three_year = '--'
     return (
         code, name, week, week2month, month2three_month, three_month2six_month, six_month2year, year_2two_year,
-        two_year_2three_year, json_file['managerTrigger'])
+        two_year_2three_year, total_asset, json_file['managerTrigger'])
     # 代码  名字  周  1月 3月 6月 1年 trigger
 
 
@@ -69,11 +70,11 @@ if __name__ == '__main__':
             tmp_data[tuple[0]] = tuple
     all_funds = get_funds()
     compare_index = all_funds['compare_index']
-    title1 = ['', '']
+    title1 = ['', '', '']
     for i, index in enumerate(compare_index):
         title1.append(tmp_data[index][1])
         title1.extend(['', '', '', '', '', ''])
-    title2 = ['代码', '名字']
+    title2 = ['代码', '名字', '基金经理管理规模']
     for index in compare_index:
         title2.extend(['近一周', '1周~1月', '1月~3月', '3月~6月', '6月~1年', '1年-2年', '2年-3年'])
     for i in range(len(title1)):
@@ -83,7 +84,12 @@ if __name__ == '__main__':
     for ind, item in enumerate(all_funds['fund']):
         worksheet.cell(3 + ind, 1, item)
         worksheet.cell(3 + ind, 2, tmp_data[item][1])  # name
-        cnt = 3
+        asset = worksheet.cell(3 + ind, 3, tmp_data[item][-2])  # total asset
+        if float(tmp_data[item][-2]) <= 100:
+            asset.fill = fill_red
+        elif float(tmp_data[item][-2]) > 400:
+            asset.fill = fill_green
+        cnt = 4
         for index in compare_index:
             for i in range(2, 9):
                 try:
@@ -98,6 +104,7 @@ if __name__ == '__main__':
                 except:
                     worksheet.cell(3 + ind, cnt, '--')
                 cnt += 1
+        # 检查经理是否变更
         if '又' not in tmp_data[item][-1]:
             if int(tmp_data[item][-1][:-1]) < 20:
                 change_manager.append((tmp_data[item][0], tmp_data[item][1]))
@@ -105,7 +112,8 @@ if __name__ == '__main__':
         if '又' not in tmp_data[item][-1]:
             if int(tmp_data[item][-1][:-1]) < 20:
                 change_manager.append((tmp_data[item][0], tmp_data[item][1]))
-    worksheet.column_dimensions['B'].width=32
+    worksheet.column_dimensions['B'].width = 32
+    worksheet.column_dimensions['C'].width = 20
     workbook.save(filename='fund.xlsx')
     print('*' * 30, 'result', '*' * 30)
     print('处理完毕，文件fund.xlsx已经输出。')
