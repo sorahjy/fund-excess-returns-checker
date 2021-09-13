@@ -87,7 +87,7 @@ if __name__ == '__main__':
         asset = worksheet.cell(3 + ind, 3, tmp_data[item][-2])  # total asset
         if float(tmp_data[item][-2]) <= 100:
             asset.fill = fill_red
-        elif float(tmp_data[item][-2]) > 400:
+        elif float(tmp_data[item][-2]) > 300:
             asset.fill = fill_green
         cnt = 4
         for index in compare_index:
