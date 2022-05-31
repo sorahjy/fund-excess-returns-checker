@@ -38,5 +38,8 @@ openpyxl~=2.5.3
 ![avatar](./img/2021.png) -->
 
 
+### Update v1.2  2022.5
+增加了对债券基金的详细对比支持。
+
 ### Acknowledgment
 感谢天天基金网

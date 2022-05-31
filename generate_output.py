@@ -1,11 +1,10 @@
 import json, openpyxl
-from funds import get_funds
+from funds import get_funds,get_funds_bond
 from openpyxl.styles.colors import Color
 from openpyxl.styles import PatternFill
 
-# highlight_red = [2, 4, 8, 10, 15, 20, 20]
-highlight_red = [2, 4.5, 9, 13, 20, 30, 30]
-highlight_green = [-1, -0.5, 0, 1, 3, 6, 6]
+
+
 
 
 def convert(str):
@@ -68,6 +67,10 @@ if __name__ == '__main__':
             data = json.loads(line)
             tuple = process_item(data)
             tmp_data[tuple[0]] = tuple
+
+    # 股票基金
+    highlight_red = [2, 4.5, 9, 13, 20, 30, 30]
+    highlight_green = [-1, -0.5, 0, 1, 3, 6, 6]
     all_funds = get_funds()
     compare_index = all_funds['compare_index']
     title1 = ['', '', '']
@@ -108,10 +111,56 @@ if __name__ == '__main__':
         if '又' not in tmp_data[item][-1]:
             if int(tmp_data[item][-1][:-1]) < 20:
                 change_manager.append((tmp_data[item][0], tmp_data[item][1]))
-    for item in all_funds['fund_extra']:
+    # for item in all_funds['fund_extra']:
+    #     if '又' not in tmp_data[item][-1]:
+    #         if int(tmp_data[item][-1][:-1]) < 20:
+    #             change_manager.append((tmp_data[item][0], tmp_data[item][1]))
+
+    # 债券基金
+    highlight_red = [0.04, 0.1, 0.3, 0.4, 0.75, 1.5, 1.5]
+    highlight_green = [-0.03, 0, 0.1, 0.15, 0.25, 0.5, 0.5]
+    pre_fix = 6+len(all_funds['fund'])
+    all_funds = get_funds_bond()
+    compare_index = all_funds['compare_index']
+    title1 = ['', '', '']
+    for i, index in enumerate(compare_index):
+        title1.append(tmp_data[index][1])
+        title1.extend(['', '', '', '', '', ''])
+    title2 = ['代码', '名字', '基金经理管理规模']
+    for index in compare_index:
+        title2.extend(['近一周', '1周~1月', '1月~3月', '3月~6月', '6月~1年', '1年-2年', '2年-3年'])
+    for i in range(len(title1)):
+        worksheet.cell(pre_fix-2, i + 1, title1[i])
+    for i in range(len(title2)):
+        worksheet.cell(pre_fix-1, i + 1, title2[i])
+    for ind, item in enumerate(all_funds['fund']):
+        worksheet.cell(pre_fix + ind, 1, item)
+        worksheet.cell(pre_fix+ ind, 2, tmp_data[item][1])  # name
+        asset = worksheet.cell(pre_fix + ind, 3, tmp_data[item][-2])  # total asset
+        if float(tmp_data[item][-2]) <= 100:
+            asset.fill = fill_red
+        elif float(tmp_data[item][-2]) > 300:
+            asset.fill = fill_green
+        cnt = 4
+        for index in compare_index:
+            for i in range(2, 9):
+                try:
+                    value = tmp_data[item][i] - tmp_data[index][i]
+                    c = worksheet.cell(pre_fix + ind, cnt, value)
+                    if i - 2 < len(highlight_green):
+                        if value < highlight_green[i - 2]:
+                            c.fill = fill_green
+                    if i - 2 < len(highlight_red):
+                        if value > highlight_red[i - 2]:
+                            c.fill = fill_red
+                except:
+                    worksheet.cell(pre_fix + ind, cnt, '--')
+                cnt += 1
+        # 检查经理是否变更
         if '又' not in tmp_data[item][-1]:
             if int(tmp_data[item][-1][:-1]) < 20:
                 change_manager.append((tmp_data[item][0], tmp_data[item][1]))
+
     worksheet.column_dimensions['B'].width = 32
     worksheet.column_dimensions['C'].width = 20
     workbook.save(filename='fund.xlsx')
