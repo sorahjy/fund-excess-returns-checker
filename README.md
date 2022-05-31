@@ -4,11 +4,13 @@
 ### USAGE STEP 1
 ##### funds.py文件下修改基金参数：
 
-* compare_index是对比的指数基金或ETF代码
+* compare_index是对比的股票基金或指数ETF代码
 
-* fund是需要跟踪的基金(超额收益和经理人事变动)代码
+* compare_index_bond是对比的债券或固收+基金代码
 
-* fund_extra是只需要跟踪基金经理是否变化的基金代码（适合债券和固收+）
+* fund是需要跟踪的中高风险基金代码
+
+* fund_bond是需要跟踪的中低风险基金代码
 
 ### USAGE STEP 2
 bash run.sh
@@ -39,7 +41,7 @@ openpyxl~=2.5.3
 
 
 ### Update v1.2  2022.5
-增加了对债券基金的详细对比支持。
+增加了对中低风险基金的详细对比支持。
 
 ### Acknowledgment
 感谢天天基金网
