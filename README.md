@@ -50,6 +50,8 @@ chinese_calendar
 ### Update v1.3  2022.11
 增加了对中信股指期货持仓的统计。
 
+### Update v1.4  2023.01
+代码细节优化
 
 ### Acknowledgment
 感谢天天基金网和新浪财经网
