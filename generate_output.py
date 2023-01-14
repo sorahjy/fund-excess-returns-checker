@@ -71,8 +71,8 @@ if __name__ == '__main__':
             tmp_data[tuple[0]] = tuple
 
     # 股票基金
-    highlight_red = [2, 4.5, 9, 13, 20, 30, 30]
-    highlight_green = [-1, -0.5, 0, 1, 3, 6, 6]
+    highlight_red = [1.5, 3, 5, 6.5, 10, 15, 15]
+    highlight_green = [-1.5, -3, -5, -6.5, -10, -15, -15]
     all_funds = get_funds()
     compare_index = all_funds['compare_index']
     title1 = ['', '', '']
