@@ -67,3 +67,6 @@ def run_citic_futures():
         print('有误，此日期非工作日！！！')
 
     print('*' * 68)
+
+if __name__ == '__main__':
+    run_citic_futures()
