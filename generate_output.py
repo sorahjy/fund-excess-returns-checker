@@ -55,6 +55,8 @@ if __name__ == '__main__':
     fill_green = PatternFill('solid', fgColor=green)
     red = Color(indexed=2, tint=0.5)
     fill_red = PatternFill('solid', fgColor=red)
+    purple = Color(indexed=20, tint=0.3)
+    fill_purple = PatternFill('solid', fgColor=purple)
     tmp_data = {}
     change_manager = []
     workbook = openpyxl.Workbook()
@@ -83,7 +85,9 @@ if __name__ == '__main__':
     for i in range(len(title2)):
         worksheet.cell(2, i + 1, title2[i])
     for ind, item in enumerate(all_funds['fund']):
-        worksheet.cell(3 + ind, 1, item)
+        fund_id = worksheet.cell(3 + ind, 1, item)
+        if item in all_funds['hold_index']:
+            fund_id.fill = fill_purple
         worksheet.cell(3 + ind, 2, tmp_data[item][1])  # name
         asset = worksheet.cell(3 + ind, 3, tmp_data[item][-2])  # total asset
         if float(tmp_data[item][-2]) <= 100:
