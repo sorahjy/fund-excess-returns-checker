@@ -30,8 +30,8 @@ class JijinSpider(scrapy.Spider):
             my_item['fundCode']=html.xpath('//*[@id="body"]/div[11]/div/div/div[1]/div[1]/div//span[@class="ui-num"]/text()')[0]
             my_item['managerTrigger'] = html.xpath('//*[@id="fundManagerTab"]//td[@class="td03"]/text()')[0]
             if len(my_item['name']) != 0 \
-                    and html.xpath('//div[@class="fundInfoItem"]/div[1]/@class')[0] != 'tuishiTip' \
-                    and ''.join(html.xpath('//dl[@class="dataItem01"]//span[@class="sp01"]/text()')) == '净值估算':
+                    and html.xpath('//div[@class="fundInfoItem"]/div[1]/@class')[0] != 'tuishiTip':
+                    # and ''.join(html.xpath('//dl[@class="dataItem01"]//span[@class="sp01"]/text()')) == '净值估算' 
                 my_item['name'] = my_item['name'][0]
                 my_item['netAssetValueEstimated'] = ''.join(html.xpath('//dl[@class="dataItem01"]/dd[1]/dl[1]/span/text()'))  # 估算净值
                 my_item['netAssetValue'] = ''.join(html.xpath('//dl[@class="dataItem02"]/dd[1]/span[1]/text()'))  # 单位净值

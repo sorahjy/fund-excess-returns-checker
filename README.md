@@ -53,5 +53,8 @@ chinese_calendar
 ### Update v1.4  2023.01
 代码细节优化
 
+### Update v1.4.1  2023.07.22
+适配基金估值下线后的天天基金前端
+
 ### Acknowledgment
 感谢天天基金网和新浪财经网

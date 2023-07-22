@@ -3,3 +3,6 @@ lxml~=4.2.1
 openpyxl~=2.5.3
 pandas
 chinese_calendar
+twisted==21.7
+pyopenssl==22.0.0
+cryptography==36.0.2
