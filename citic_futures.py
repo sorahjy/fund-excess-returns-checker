@@ -3,6 +3,7 @@ import requests
 from lxml import etree
 import pandas as pd
 from chinese_calendar import is_holiday
+import base64
 
 def run_citic_futures():
     currentDateAndTime = datetime.datetime.now()
@@ -11,7 +12,7 @@ def run_citic_futures():
     while is_holiday(yesterday) or yesterday.isoweekday() > 5:
         yesterday = yesterday + datetime.timedelta(days=-1)
     yesterday = yesterday.strftime('%Y-%m-%d')
-    print("开始计算 "+yesterday+" 的中信股指期货持仓...")
+    print("开始计算 "+yesterday+" 的小可爱股指期货持仓...")
     headers = {
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Encoding": "br, gzip, deflate",
@@ -41,13 +42,13 @@ def run_citic_futures():
             results = list(pd.read_html(etree.tostring(buy, encoding='utf-8').decode(), encoding='utf-8', header=0)[
                             0].T.to_dict().values())
             for json in results:
-                if json['会员简称'] == '中信期货':
+                if json['会员简称'] == base64.b64decode('5Lit5L+h5pyf6LSn').decode('utf8'):
                     buy_values.append((json['多单持仓'], json['比上交易增减']))
                     break
             results = list(pd.read_html(etree.tostring(sell, encoding='utf-8').decode(), encoding='utf-8', header=0)[
                             0].T.to_dict().values())
             for json in results:
-                if json['会员简称'] == '中信期货':
+                if json['会员简称'] == base64.b64decode('5Lit5L+h5pyf6LSn').decode('utf8'):
                     sell_values.append((json['空单持仓'], json['比上交易增减']))
                     break
         result_dict[varity] = {'多单总计': sum([x for x, _ in buy_values]), '空单总计': sum([x for x, _ in sell_values]),
