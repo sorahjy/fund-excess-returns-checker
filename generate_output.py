@@ -2,7 +2,7 @@ import json, openpyxl
 from funds import get_funds,get_funds_bond
 from openpyxl.styles.colors import Color
 from openpyxl.styles import PatternFill
-from citic_futures import run_citic_futures
+# from citic_futures import run_citic_futures
 
 
 def convert(str):
@@ -44,13 +44,19 @@ def process_item(json_file):
         two_year_2three_year = round(three_year / two_year * 100 - 100, 2)
     except:
         two_year_2three_year = '--'
+    try:
+        five_year = convert(json_file['netAssetValueRestoredGrowthRateRecentFiveYear']) + 100
+        three_year_2five_year = round(five_year / three_year * 100 - 100, 2)
+    except:
+        three_year_2five_year = '--'
     return (
         code, name, week, week2month, month2three_month, three_month2six_month, six_month2year, year_2two_year,
-        two_year_2three_year, total_asset, json_file['managerTrigger'])
+        two_year_2three_year,three_year_2five_year ,total_asset, json_file['managerTrigger'])
     # 代码  名字  周  1月 3月 6月 1年 trigger
 
 
 if __name__ == '__main__':
+    tot_metric = 8
     green = Color(indexed=3, tint=0.5)
     fill_green = PatternFill('solid', fgColor=green)
     red = Color(indexed=2, tint=0.5)
@@ -69,17 +75,17 @@ if __name__ == '__main__':
             tmp_data[tuple[0]] = tuple
 
     # 股票基金
-    highlight_red = [1.5, 3, 5, 7, 12, 20, 20]
-    highlight_green = [-1.5, -3, -4.5, -6, -10, -15, -15]
+    highlight_red = [1.5, 3, 5, 7, 12, 20, 20, 25]
+    highlight_green = [-1.5, -3, -4.5, -6, -10, -15, -15, -20]
     all_funds = get_funds()
     compare_index = all_funds['compare_index']
     title1 = ['', '', '']
     for i, index in enumerate(compare_index):
         title1.append(tmp_data[index][1])
-        title1.extend(['']*7)
+        title1.extend(['']*tot_metric)
     title2 = ['代码', '名字', '基金经理管理规模']
     for index in compare_index:
-        title2.extend(['近一周', '1周~1月', '1月~3月', '3月~6月', '6月~1年', '1年-2年', '2年-3年',''])
+        title2.extend(['近一周', '1周~1月', '1月~3月', '3月~6月', '6月~1年', '1年-2年', '2年-3年', '3年-5年',''])
     for i in range(len(title1)):
         worksheet.cell(1, i + 1, title1[i])
     for i in range(len(title2)):
@@ -96,7 +102,7 @@ if __name__ == '__main__':
             asset.fill = fill_green
         cnt = 4
         for index in compare_index:
-            for i in range(2, 9):
+            for i in range(2, 2+tot_metric):
                 try:
                     value = tmp_data[item][i] - tmp_data[index][i]
                     c = worksheet.cell(3 + ind, cnt, value)
@@ -128,10 +134,10 @@ if __name__ == '__main__':
     title1 = ['', '', '']
     for i, index in enumerate(compare_index):
         title1.append(tmp_data[index][1])
-        title1.extend(['']*7)
+        title1.extend(['']*tot_metric)
     title2 = ['代码', '名字', '基金经理管理规模']
     for index in compare_index:
-        title2.extend(['近一周', '1周~1月', '1月~3月', '3月~6月', '6月~1年', '1年-2年', '2年-3年', ''])
+        title2.extend(['近一周', '1周~1月', '1月~3月', '3月~6月', '6月~1年', '1年-2年', '2年-3年', '3年-5年', ''])
     for i in range(len(title1)):
         worksheet.cell(pre_fix-2, i + 1, title1[i])
     for i in range(len(title2)):
@@ -146,7 +152,7 @@ if __name__ == '__main__':
             asset.fill = fill_green
         cnt = 4
         for index in compare_index:
-            for i in range(2, 9):
+            for i in range(2, 2+tot_metric):
                 try:
                     value = tmp_data[item][i] - tmp_data[index][i]
                     c = worksheet.cell(pre_fix + ind, cnt, value)
@@ -176,6 +182,7 @@ if __name__ == '__main__':
         print('经检查，近20天以下基金的经理发生了人事变动：')
         for tuple in change_manager:
             print(tuple)
-    print('*' * 29, '中信期指' ,'*' * 29)
-    run_citic_futures()
+    # print('*' * 29, '中信期指' ,'*' * 29)
+    # run_citic_futures()
 
+    123456

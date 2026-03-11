@@ -2,6 +2,7 @@
 import scrapy
 import os
 import json,time,random
+
 from lxml import etree
 from ttjj_spider.items import MyItem
 import requests
@@ -71,7 +72,14 @@ class JijinSpider(scrapy.Spider):
                         my_item['{}RecentTwoYear'.format(key)] = ''.join(row.xpath('./td[8]/div/text()'))
                         my_item['{}RecentThreeYear'.format(key)] = ''.join(row.xpath('./td[9]/div/text()'))
                         my_item['{}SinceFirstDayOfYear'.format(key)] = ''.join(row.xpath('./td[6]/div/text()'))
-
+            hea = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36'}
+            zhangdie_url = "https://fundf10.eastmoney.com/FundArchivesDatas.aspx?type=jdzf&code={}".format(my_item['fundCode'])
+            headers = {'content-type': 'application/json',
+                       'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0'}
+            r = requests.get(zhangdie_url, headers=headers)
+            content = r.text.split("近5年")[1].split("成立来")[0].split("</li>")[1].split(">")[1].strip()
+            my_item['netAssetValueRestoredGrowthRateRecentFiveYear'] =  content
             jjjl_url = html.xpath('//*[@id="fundManagerTab"]//td[@class="td02"]//a/@href')[:1]
 
         if jjjl_url:
