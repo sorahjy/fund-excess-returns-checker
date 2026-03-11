@@ -91,7 +91,7 @@ DOWNLOAD_DELAY = 1
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'ttjj_spider.middlewares.TtjjSpiderDownloaderMiddleware': 543,
-    'ttjj_spider.middlewares.MyUserAgent': 544
+    'ttjj_spider.middlewares.MyUserAgent': 544,
 }
 
 # Enable or disable extensions

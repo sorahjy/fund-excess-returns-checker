@@ -1,8 +1,8 @@
-scrapy~=1.6.0
-lxml~=4.2.1
-openpyxl~=2.5.3
+scrapy
+lxml
+openpyxl
 pandas
 chinese_calendar
-twisted==21.7
-pyopenssl==22.0.0
-cryptography==36.0.2
+twisted
+pyopenssl
+cryptography

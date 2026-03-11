@@ -27,7 +27,7 @@ class MyItem(scrapy.Item):
     netAssetValueRestoredGrowthRateRecentOneYear = scrapy.Field()  # 近一年涨幅
     netAssetValueRestoredGrowthRateRecentTwoYear = scrapy.Field()  # 近两年涨幅
     netAssetValueRestoredGrowthRateRecentThreeYear = scrapy.Field()  # 近三年涨幅
-    # netAssetValueRestoredGrowthRateRecentFiveYear = scrapy.Field()  # 近五年涨幅
+    netAssetValueRestoredGrowthRateRecentFiveYear = scrapy.Field()  # 近五年涨幅
     netAssetValueRestoredGrowthRateSinceFirstDayOfYear = scrapy.Field()  # 今年来涨幅
     # netAssetValueRestoredGrowthRateSinceInception = scrapy.Field()  # 成立来涨幅
     categoryAverageOfNetAssetValueRestoredGrowthRecentWeek = scrapy.Field()  # 近一周同类平均
