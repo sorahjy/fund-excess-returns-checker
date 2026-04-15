@@ -21,10 +21,8 @@ bash run.sh
  * 基金当日的买卖指标和技术面指标。基金的历史买卖点。 
  * 提示经理人事变动情况
 
-
-
 ### Requirements
-sscrapy
+scrapy
 lxml
 openpyxl
 pandas
@@ -32,6 +30,7 @@ chinese_calendar
 twisted
 pyopenssl
 cryptography
+
 ### Update v1.1  2021.7
 新增该基金的基金经理管理规模提示，小于100亿标红（表示管理规模小），大于300亿标绿（表示管理规模较大）。
 
@@ -40,7 +39,6 @@ cryptography
 
 附2021年收益图：
 ![avatar](./img/2021.png) -->
-
 
 ### Update v1.2  2022.5
 增加了对中低风险基金的详细对比支持。
