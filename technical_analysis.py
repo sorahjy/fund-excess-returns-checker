@@ -468,17 +468,12 @@ def analyze_fund(nav_records, estimate=None):
     if latest_pct_b is not None:
         latest_pct_b = round(latest_pct_b, 4)
 
-    # 历史净值百分位（最近6年）
+    # 历史净值百分位（最6年）
     lookback_navs = navs[-1500:] if len(navs) > 1500 else navs
-    sorted_navs = sorted(lookback_navs)
     current_nav = navs[-1]
-    rank = 0
-    for v in sorted_navs:
-        if v < current_nav:
-            rank += 1
-        else:
-            break
-    nav_percentile = round(rank / len(sorted_navs) * 100, 1)
+    nav_low = min(lookback_navs)
+    nav_high = max(lookback_navs)
+    nav_percentile = round((current_nav - nav_low) / (nav_high - nav_low) * 100, 1)
 
     if nav_percentile < 20:
         percentile_score = 1

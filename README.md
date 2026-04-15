@@ -55,6 +55,9 @@ cryptography
 ### Update v2.0  2026.4.15
 增加技术面指标。增加技术面买卖点推荐。增加html展示。
 
+### Update v2.0.1  2026.4.15
+修复百分位计算问题
+
 
 ### Acknowledgment
 感谢天天基金网和新浪财经网
