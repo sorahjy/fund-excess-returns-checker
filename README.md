@@ -16,24 +16,22 @@
 bash run.sh
 
 ### Outputs
-会输出一个Excel文件 'fund.xlsx' 展示基金近期超额收益表现。
+会输出一个html文件 'fund_report.html' 展示：
+ * 基金近期超额收益表现。
+ * 基金当日的买卖指标和技术面指标。基金的历史买卖点。 
+ * 提示经理人事变动情况
 
-此外终端会提示经理人事变动情况，如下图所示：
-
-![avatar](./img/pic.png)
 
 
 ### Requirements
-scrapy~=1.6.0
-
-lxml~=4.2.1
-
-openpyxl~=2.5.3
-
+sscrapy
+lxml
+openpyxl
 pandas
-
 chinese_calendar
-
+twisted
+pyopenssl
+cryptography
 ### Update v1.1  2021.7
 新增该基金的基金经理管理规模提示，小于100亿标红（表示管理规模小），大于300亿标绿（表示管理规模较大）。
 
@@ -50,11 +48,15 @@ chinese_calendar
 ### Update v1.3  2022.11
 增加了对中信股指期货持仓的统计。
 
-### Update v1.4  2023.01
+### Update v1.4  2023.1
 代码细节优化
 
-### Update v1.4.1  2023.07.22
+### Update v1.4.1  2023.7.22
 适配基金估值下线后的天天基金前端
+
+### Update v2.0  2026.4.15
+增加技术面指标。增加技术面买卖点推荐。增加html展示。
+
 
 ### Acknowledgment
 感谢天天基金网和新浪财经网
