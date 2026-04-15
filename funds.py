@@ -1,4 +1,5 @@
 import json
+import os
 
 # 对比的中高风险基金
 compare_index = ["510310", "510580"]  # 沪深300，中证500，
@@ -86,5 +87,6 @@ def get_funds_bond():
 
 
 if __name__ == '__main__':
+    os.makedirs('data', exist_ok=True)
     with open('data/fund_codes.json', 'w', encoding='utf-8') as fin:
         json.dump(list(set(compare_index + compare_index_bond + fund + fund_bond)), fin)
