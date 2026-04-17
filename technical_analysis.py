@@ -513,29 +513,77 @@ def analyze_fund(nav_records, estimate=None):
     BUY_SIGNAL = 4
     SELL_SIGNAL = -4
 
-    if score >= BUY_SIGNAL:
-        overall = '买入'
-    elif score <= SELL_SIGNAL:
-        overall = '卖出'
-    else:
-        overall = '持有'
-
-    # --- 走势图数据 (近5年≈1250日) + 每日信号标记 ---
+    # --- 走势图数据 (近5年≈1250日) + 每日信号标记（含历史去重 & 百分位过滤）---
     recent_n = min(1250, len(navs))
     sl = slice(-recent_n, None)
     start_idx = len(navs) - recent_n
 
     buy_markers = []
     sell_markers = []
+    force_sell_markers = []
+    last_buy_nav = 0.0
+    last_sell_nav = 0.0
+    overall = '持有'
+    is_force_sell = False
+
     for ci in range(recent_n):
         gi = start_idx + ci
         if gi < 120:
             continue
         s = calc_point_score(gi, *score_args)
-        if s >= BUY_SIGNAL:
-            buy_markers.append((ci, navs[gi]))
-        elif s <= SELL_SIGNAL:
-            sell_markers.append((ci, navs[gi]))
+
+        # 计算该时刻的近6年百分位
+        lb_start = max(0, gi - 1500 + 1)
+        lb_navs = navs[lb_start:gi + 1]
+        nav_lo = min(lb_navs)
+        nav_hi = max(lb_navs)
+        pt_pct = (navs[gi] - nav_lo) / (nav_hi - nav_lo) * 100 if nav_hi > nav_lo else 50.0
+
+        is_last = (gi == len(navs) - 1)
+        point_signal = '持有'
+        point_forced = False
+
+        # ① 强制止盈：last_buy_nav≠0 且当前净值 > last_buy_nav × 1.25
+        if last_buy_nav != 0 and navs[gi] > last_buy_nav * 1.25:
+            point_forced = True
+            # 强制卖出也算卖点，执行规则2流程
+            last_buy_nav = 0.0
+            last_sell_nav = navs[gi]
+            force_sell_markers.append((ci, navs[gi]))
+            point_signal = '卖出'
+
+        # ② 普通买卖信号（非强制止盈时才判断）
+        if not point_forced:
+            if s >= BUY_SIGNAL:
+                # 百分位 > 90% 时买点不成立
+                if pt_pct <= 90:
+                    last_sell_nav = 0.0
+                    if last_buy_nav == 0:
+                        last_buy_nav = navs[gi]
+                        buy_markers.append((ci, navs[gi]))
+                        point_signal = '买入'
+                    else:
+                        if navs[gi] <= last_buy_nav * 0.97:
+                            last_buy_nav = navs[gi]
+                            buy_markers.append((ci, navs[gi]))
+                            point_signal = '买入'
+            elif s <= SELL_SIGNAL:
+                # 百分位 < 10% 时卖点不成立
+                if pt_pct >= 10:
+                    last_buy_nav = 0.0
+                    if last_sell_nav == 0:
+                        last_sell_nav = navs[gi]
+                        sell_markers.append((ci, navs[gi]))
+                        point_signal = '卖出'
+                    else:
+                        if navs[gi] >= last_sell_nav * 1.03:
+                            last_sell_nav = navs[gi]
+                            sell_markers.append((ci, navs[gi]))
+                            point_signal = '卖出'
+
+        if is_last:
+            overall = point_signal
+            is_force_sell = point_forced and point_signal == '卖出'
 
     # --- 最新指标值 ---
     latest_dif = latest_dea = latest_macd_val = None
@@ -589,6 +637,8 @@ def analyze_fund(nav_records, estimate=None):
         'recent_boll_lower': boll_lower[sl],
         'buy_markers': buy_markers,
         'sell_markers': sell_markers,
+        'force_sell_markers': force_sell_markers,
+        'is_force_sell': is_force_sell,
         'latest_nav': navs[-1],
         'latest_date': dates[-1],
         'estimated': estimated,

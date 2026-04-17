@@ -200,6 +200,7 @@ def render_sparkline_svg(sig, width=650, height=140):
     dates = sig.get('recent_dates', [])
     buy_markers = sig.get('buy_markers', [])
     sell_markers = sig.get('sell_markers', [])
+    force_sell_markers = sig.get('force_sell_markers', [])
 
     valid_navs = [v for v in navs if v is not None and v != 'null']
     if len(valid_navs) < 2:
@@ -306,6 +307,12 @@ def render_sparkline_svg(sig, width=650, height=140):
         if nav_val is not None and nav_val != 'null':
             x, y = to_xy(ci, nav_val)
             svg += f'<polygon points="{x:.1f},{y - 3:.1f} {x - 4:.1f},{y - 11:.1f} {x + 4:.1f},{y - 11:.1f}" fill="#52c41a" opacity="0.85" />'
+
+    # 止盈标记（紫色向下三角）
+    for ci, nav_val in force_sell_markers:
+        if nav_val is not None and nav_val != 'null':
+            x, y = to_xy(ci, nav_val)
+            svg += f'<polygon points="{x:.1f},{y - 3:.1f} {x - 4:.1f},{y - 11:.1f} {x + 4:.1f},{y - 11:.1f}" fill="#722ed1" opacity="0.85" />'
 
     svg += '</svg>'
     return svg
@@ -537,6 +544,12 @@ def generate_html(tmp_data, equity_config, bond_config, change_manager, signals=
             j_s = sig.get('j_score', 0)
             boll_s = sig.get('boll_score', 0)
 
+            force_note = '<br><small style="color:#722ed1">触发止盈</small>' if sig.get('is_force_sell') else ''
+            if sig.get('is_force_sell'):
+                overall_badge = '<span class="signal-badge badge-force-sell">止盈信号</span>'
+            else:
+                overall_badge = render_signal_badge(sig['overall'])
+
             signal_rows += f'''<tr>
                 <td>{code}</td>
                 <td>{name}</td>
@@ -550,8 +563,8 @@ def generate_html(tmp_data, equity_config, bond_config, change_manager, signals=
                 <td>{render_adx_bar(sig.get('adx_value'), sig.get('market_state', ''))}</td>
                 <td>{render_atr_display(sig.get('atr_pct'))}</td>
                 <td>{render_percentile_bar(sig.get('nav_percentile'))}<br></td>
-                <td>{render_score_bar(sig.get('score', 0))}</td>
-                <td>{render_signal_badge(sig['overall'])}{gztime_display}</td>
+                <td>{render_score_bar(sig.get('score', 0))}{force_note}</td>
+                <td>{overall_badge}{gztime_display}</td>
             </tr>\n'''
 
         signal_html = f'''
@@ -564,8 +577,9 @@ def generate_html(tmp_data, equity_config, bond_config, change_manager, signals=
             <span><svg width="20" height="10"><rect x="0" y="2" width="20" height="6" fill="#e6f0fa" opacity="0.7"/></svg> 布林带</span>
             <span><svg width="14" height="12"><polygon points="7,1 2,11 12,11" fill="#f5222d" opacity="0.85"/></svg> 买入信号</span>
             <span><svg width="14" height="12"><polygon points="7,11 2,1 12,1" fill="#52c41a" opacity="0.85"/></svg> 卖出信号</span>
+            <span><svg width="14" height="12"><polygon points="7,11 2,1 12,1" fill="#722ed1" opacity="0.85"/></svg> 止盈信号</span>
         </div>
-        <p class="signal-note">ADX&ge;25=趋势行情（MA/MACD权重&times;1.5），ADX&lt;25=震荡行情（RSI/布林权重&times;1.5），KDJ固定权重&times;1 | 综合建议: 评分 &ge;+4 买入, &le;-4 卖出 | ATR/百分位仅展示</p>
+        <p class="signal-note">ADX&ge;25=趋势行情（MA/MACD权重&times;1.5），ADX&lt;25=震荡行情（RSI/布林权重&times;1.5），KDJ固定权重&times;1 | 综合建议: 评分 &ge;+4 买入, &le;-4 卖出 | 买卖信号经历史去重(变动需超3%)、百分位过滤(买&gt;90%/卖&lt;10%无效) | 净值涨幅&gt;25%触发<span style="color:#722ed1">止盈信号</span> | ATR/百分位仅展示</p>
         <div class="table-wrapper">
         <table class="signal-table">
             <thead>
@@ -615,6 +629,7 @@ def generate_html(tmp_data, equity_config, bond_config, change_manager, signals=
     .badge-buy {{ background: #f5222d; }}
     .badge-sell {{ background: #52c41a; }}
     .badge-hold {{ background: #8c8c8c; }}
+    .badge-force-sell {{ background: #722ed1; }}
     .trend-bull {{ color: #cf1322; font-weight: 600; font-size: 12px; }}
     .trend-bear {{ color: #389e0d; font-weight: 600; font-size: 12px; }}
     .trend-neutral {{ color: #8c8c8c; font-size: 12px; }}
